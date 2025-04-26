@@ -28,13 +28,13 @@ app.get("/user/getAllData", userAuth, (req,res,next) => {
 })
 
 
-// app.post("/user",(req,res) => {
-//     res.send('Post user Request! !!!!!!!!!!!');
-// })
-
-// app.delete("/user",(req,res) => {
-//     res.send('Delete user Request! !!!!!!!!!!!');
-// })
+// Error Handling Middleware
+app.use("/",(err, req, res, next) => {
+    if(err) {
+        console.error(err.stack);
+        res.status(500).send('Something broke!');
+    }
+});
 
 app.listen(7777, () => {
     console.log('Server is running on port 7777');
