@@ -47,6 +47,6 @@ app.post("/signup",async (req, res) => {
         res.send('Signup successful');
     } catch (error) {
         console.log("Error saving user:", error);
-        res.status(500).send('Error saving user');
+        res.status(400).send('Error saving user'); // send a 400 Bad Request response if there was an error saving the user
     }
 });
