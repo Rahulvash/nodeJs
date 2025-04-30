@@ -6,6 +6,8 @@ const connectDB = require('./config/database.js');
 
 const User = require('./models/user.js');
 
+app.use(express.json()); // Middleware to parse JSON request bodies
+
 connectDB().then(() => {
     console.log('MongoDB cluster connected successfully');
     app.listen(7777, () => {
@@ -17,16 +19,16 @@ connectDB().then(() => {
 
 
 app.post("/signup",async (req, res) => {
-    const userObject1 = {
-        firstName : "Manu",
-        lastName : "Sharma",
-        userName : "manuSharma",
-        email : "manu@sharma.com",
-        password : "manuSharma",
-        phoneNumber : "9999999999",
-        age : 30,
-        gender: "Male"
-    }
+    // const userObject1 = {
+    //     firstName : "Ram Ram",
+    //     lastName : "Ram Ram",
+    //     userName : "ramSharma",
+    //     email : "ram@ram.com",
+    //     password : "ramRam",
+    //     phoneNumber : "9999999999",
+    //     age : 20,
+    //     gender: "Male"
+    // }
 
     // const userObject2 = {
     //     firstName : req.body.firstName,
@@ -41,7 +43,7 @@ app.post("/signup",async (req, res) => {
     
    
     try {
-        const user = new User(userObject1); // create a new user instance with the userObject1 data
+        const user = new User(req.body); // create a new user instance with the userObject1 data
         await user.save(); // save the user instance to the database
         console.log('User saved successfully:', user);
         res.send('Signup successful');
