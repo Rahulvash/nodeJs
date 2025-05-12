@@ -52,3 +52,18 @@ app.post("/signup",async (req, res) => {
         res.status(400).send('Error saving user'); // send a 400 Bad Request response if there was an error saving the user
     }
 });
+
+//
+
+// sending all the users data
+app.get("/feed",async (req, res) => {
+    try {
+        const data = await User.find({}); // find all users in the database
+        res.send(data) // send the user data as a JSON response with a 200 OK status
+    }
+    catch (error) {
+        console.log("Error fetching users:", error);
+        res.status(500).send('Error fetching users'); // send a 500 Internal Server Error response if there was an error fetching the users
+    }
+    
+})
