@@ -53,6 +53,62 @@ app.post("/signup",async (req, res) => {
     }
 });
 
+
+app.delete("/delete",async (req, res) => {
+    const userID = req.body.userID; // get the user ID from the request body
+    try{
+        const deletedUser = await User.findByIdAndDelete(userID); // find the user by ID and delete it
+        if (deletedUser) {
+            res.send('User deleted successfully'); // send a success response if the user was deleted
+        } else {
+            res.status(404).send('User not found'); // send a 404 Not Found response if the user was not found
+        }
+    } catch (error) {
+        console.log("Error deleting user:", error);
+        res.status(500).send('Error deleting user'); // send a 500 Internal Server Error response if there was an error deleting the user
+    }
+})
+
+// Updating user data with findOneAndUpdate
+// app.patch("/update",async (req, res) => {
+//     const emailId = req.body.emailId; // get the email ID from the request body
+//     try{
+//         const updatedUser = await User.findOneAndUpdate({email : emailId}, req.body, { new: true }); // find the user by email and update it with the new data
+//         if(updatedUser){
+//             res.send("Email: User updated successfully"); // send a success response if the user was updated
+//         }
+//         else{
+//             res.status(404).send("Email: User not found"); // send a 404 Not Found response if the user was not found
+//         }
+//     }
+//     catch (error) {
+//         res.status(500).send('Email: Error updating user'); // send a 500 Internal Server Error response if there was an error updating the user
+//         console.log("Error updating user:", error);
+//     }
+
+// })
+
+app.patch("/update",async (req,res) =>{
+    const data = req.body; // get the user data from the request body
+    try{
+        const updatedUser = await User.findByIdAndUpdate(data.userID,data,{ lean: true }); // find the user by ID and update it with the new data
+        console.log("Updated user:", updatedUser);
+        
+        if(updatedUser){
+            res.send('User updated successfully'); // send a success response if the user was updated
+        }
+        else{
+            res.status(404).send("User not found")
+        }
+    }
+    catch (error) {
+        res.status(500).send('Error updating user'); // send a 500 Internal Server Error response if there was an error updating the user
+        console.log("Error updating user:", error);
+    }
+})
+
+
+
 //
 
 // sending all the users data
