@@ -3,6 +3,9 @@ const app = express();
 const  { adminAuth }= require('./middleware/adminAuth.js');
 const { userAuth } = require('./middleware/userAuth.js');
 const connectDB = require('./config/database.js');
+const bcrypt = require('bcrypt'); // Import bcrypt for password hashing
+
+const { validateSignUp } = require('./utils/validatorSignUp.js');
 
 const User = require('./models/user.js');
 
@@ -20,9 +23,34 @@ connectDB().then(() => {
 
 app.post("/signup",async (req, res) => {
     // get the user data from the request body
-   
+    // validate the user data using the validatorSignUp utility
+    try{
+        validateSignUp(req); // this function should validate the request body and throw an error if validation fails
+    }
+    catch (error) {
+        console.log("Validation error:", error);
+        return res.status(400).send(`From validatorSignUp.js: Validation error: ${error.message}`); // send a 400 Bad Request response if validation fails
+    }
+
+    const {password , age, firstName, lastName, userName, email, phoneNumber ,gender} = req.body; // destructure the request body to get the user data excluding the password
+    const hassPassword = await bcrypt.hash(password, 10);
+    console.log("Hashed password:", hassPassword);
+    
+
     try {
-        const user = new User(req.body); // create a new user instance with the userObject1 data
+        console.log("Creating new user with data:");
+        
+        const user = new User({
+            age,
+            firstName,
+            lastName,
+            userName,
+            email,
+            password: hassPassword, // hash the password before saving it to the databas
+            phoneNumber,
+            userName,
+            gender
+        }); // create a new user instance with the userObject1 data
         // Check if any of the allowed fields are present in the request body
         
         await user.save(); // save the user instance to the database
@@ -33,6 +61,28 @@ app.post("/signup",async (req, res) => {
         res.status(400).send(`Error saving user: ${error.message}`); // send a 400 Bad Request response if there was an error saving the user
     }
 });
+
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body; // get the email and password from the request body
+    try{
+        if(!email || !password) {
+            throw new Error("Email is required"); // throw an error if email is not provided
+        }
+        const user = await User.findOne({email});
+        if(!user) {
+            throw new Error("Invalid Credentials"); // throw an error if user is not found
+        }
+        const isMatch =  bcrypt.compare(password, user.password);
+        if(!isMatch) {
+            throw new Error("Invalid Credentials"); // throw an error if password does not match
+        }
+        res.send('Login successful'); // send a success response if login is successful
+    }
+    catch (error) {
+            console.log("Error saving user:", error);
+            res.status(400).send(`Error saving user: ${error.message}`); // send a 400 Bad Request response if there was an error saving the user
+        }
+})
 
 
 app.delete("/delete",async (req, res) => {
