@@ -16,7 +16,8 @@ authRouter.post("/login", async (req, res) => {
         if(!user) {
             throw new Error("Invalid Credentials"); // throw an error if user is not found
         }
-        const isMatch =  bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
+        
         if(!isMatch) {
             throw new Error("Invalid Credentials"); // throw an error if password does not match
         }else{
@@ -75,5 +76,13 @@ authRouter.post("/signup",async (req, res) => {
         res.status(400).send(`Error saving user: ${error.message}`); // send a 400 Bad Request response if there was an error saving the user
     }
 });
+
+authRouter.post("/logout", async (req, res) => {
+            res.cookie('token', null, {
+                expires: new Date(Date.now())
+            });
+            res.send('logout successful'); // send a success response if login is successful
+        
+})
 
 module.exports = authRouter;

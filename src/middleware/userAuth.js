@@ -14,10 +14,12 @@ const userAuth = async (req, res, next) => {
         var decoded = await jwt.verify(token, 'DevTinder@123');
         console.log("Decoded token:", decoded);
         const user = await User.findById(decoded._id); // find the user by ID
+        console.log("User found:", user);
+        
         if (!user) {
             return res.status(404).send('User not found'); // send a 404 Not Found response if the user is not found
         }
-        res.send(user);
+        req.user = user;
         next();
     } catch (error) {
         console.error('Error verifying token:', error);
