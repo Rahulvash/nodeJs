@@ -4,8 +4,6 @@ const User = require('../models/user'); // import the User model
 const cookieParser = require('cookie-parser'); // import the cookie-parser middleware
 
 const userAuth = async (req, res, next) => {
-    console.log("req",req);
-    
     const { token } = req.cookies; // get the token from the cookies
     if (!token) {
         return res.status(401).send('Unauthorized'); // send a 401 Unauthorized response if the token is not present
